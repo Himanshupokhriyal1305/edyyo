@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Responsive Slider</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #080808;
+            color: white;
+        }
+
+        .slider {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            margin: 40px auto;
+            overflow: hidden;
+
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .slide {
+            display: none;
+            width: 100%;
+            height: auto;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        .controls {
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 15px;
+        }
+
+        .controls button {
+            background-color: rgba(0, 0, 0, 0.5);
+            border: none;
+            color: white;
+            font-size: 24px;
+            padding: 8px 14px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            .controls button {
+                font-size: 18px;
+                padding: 6px 10px;
+            }
+        }
+
+        .cards6 {
+            width: 100%;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .cardSlider__section {
+            padding: 30px 0;
+        }
+
+        .swiper-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: stretch;
+        }
+
+        .cardItem {
+            width: 100%;
+            padding: 15px;
+        }
+
+        @media (min-width: 768px) {
+            .cardItem {
+                width: 50%;
+            }
+        }
+
+        @media (min-width: 992px) {
+            .cardItem {
+                width: 33.3333%;
+            }
+        }
+
+        .card__wrapper {
+            height: 100%;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .card__title {
+            margin-bottom: 15px;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .card__desc {
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .card__btn {
+            border-radius: 5px;
+            padding: 12px 24px;
+            text-decoration: none;
+            color: #000;
+            background: #fff;
+            border: 1px solid #000;
+            transition: all 0.4s ease;
+        }
+
+        .card__btn.clicked {
+            background: linear-gradient(90deg, #ff4b2b, #ff416c);
+            color: #fff;
+            border-color: #ff4b2b;
+        }
+
+        .swiper-pagination {
+            display: none;
+        }
+
+        @media (max-width: 991px) {
+            .swiper-pagination {
+                display: flex;
+                justify-content: center;
+                margin-top: 20px;
+            }
+        }
+
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin: 40px auto;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            font-size: 16px;
+            background-color: #ff6ec4;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #ff3da5;
+        }
+
+
+        .flip {
+            perspective: 1000px;
+            width: 100%;
+            max-width: 400px;
+            height: 220px;
+            margin: 1rem auto;
+        }
+
+        .flip-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip:hover .flip-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-vertical:hover .flip-inner {
+            transform: rotateX(180deg);
+        }
+
+        .flip-front,
+        .flip-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            background-size: cover !important;
+            background-position: center !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .flip-front {
+            background-color: #313131;
+        }
+
+        .flip-back {
+            background-color: #000;
+            color: white;
+            transform: rotateY(180deg);
+        }
+
+        .flip-vertical .flip-back {
+            transform: rotateX(180deg);
+        }
+
+        h1.text-shadow {
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        p {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+
+        .pricing-section * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        .pricing-section {
+            min-height: 100vh;
+
+            padding: 60px 20px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pricing-section h1 {
+            margin-bottom: 35px;
+            font-size: 2.8rem;
+            color: black;
+        }
+
+        .pricing-section .card-container {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .pricing-section .card {
+            flex: 1 1 280px;
+            max-width: 360px;
+            background-color: #8a8a8a;
+            padding: 30px 20px;
+            border-radius: 25px;
+            box-shadow: 0 10px 12px 3px rgba(0, 0, 0, .25), inset 0 0px 3px 1px rgba(0, 0, 0, .2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: transform .35s;
+        }
+
+        .pricing-section .card:hover {
+            transform: scale(1.05);
+        }
+
+        .pricing-section .card:nth-child(1) {
+            background-image: linear-gradient(to bottom left, #41f6a9, #027118);
+        }
+
+        .pricing-section .card:nth-child(2) {
+            background-image: linear-gradient(to bottom, #ff5900, #eba41f);
+        }
+
+        .pricing-section .card:nth-child(3) {
+            background-image: linear-gradient(to bottom right, #3cb5f5, #0c2879);
+        }
+
+        .pricing-section .offer-title {
+            font-size: 2em;
+            text-transform: uppercase;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, .2);
+        }
+
+        .pricing-section .offer-price {
+            font-size: 3.5em;
+            margin: 20px 0;
+            position: relative;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, .2);
+        }
+
+        .pricing-section .offer-price::before {
+            content: "$";
+            font-size: .4em;
+            position: absolute;
+            top: 0;
+            right: calc(100% + 7px);
+        }
+
+        .pricing-section .offer-price::after {
+            content: "/month";
+            font-size: .2em;
+            position: absolute;
+            bottom: 18px;
+            left: calc(100% + 3px);
+        }
+
+        .pricing-section .buy {
+            cursor: pointer;
+            text-transform: uppercase;
+            background: white;
+            color: black;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 1000px;
+            margin-bottom: 20px;
+            font: inherit;
+            mix-blend-mode: screen;
+            text-shadow: 0 3px 6px rgba(0, 0, 0, .2);
+        }
+
+        .pricing-section hr {
+            width: 100%;
+            height: 2px;
+            background-color: white;
+            border: none;
+            border-radius: 1px;
+            margin: 20px 0;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, .2);
+        }
+
+        .pricing-section ul {
+            list-style-image: url(https://nsa40.casimages.com/img/2021/02/22/210222044032516304.png);
+            text-align: left;
+            padding-left: 20px;
+        }
+
+        .pricing-section .card:not(.recommended-offer) {
+            margin-top: 45px;
+        }
+
+        .pricing-section .recommended-offer {
+            padding-top: 60px;
+            position: relative;
+        }
+
+        .pricing-section .recommended-offer::before {
+            content: "RECOMMENDED";
+            position: absolute;
+            top: 17.5px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.285);
+            color: black;
+            line-height: 30px;
+            mix-blend-mode: screen;
+            font-weight: bold;
+        }
+
+        .pricing-section .recommended-offer::after {
+            content: "";
+            height: 30px;
+            position: absolute;
+            top: 17.5px;
+            width: 100%;
+            box-shadow: 0 0 6px 6px rgba(0, 0, 0, .2), inset 0 0 5px 2px rgba(0, 0, 0, .15);
+        }
+
+        .pricing-section footer {
+            color: black;
+            margin-top: 60px;
+        }
+
+        .pricing-section .italic {
+            font-style: italic;
+        }
+
+        .pricing-section footer a {
+            text-decoration: none;
+            color: inherit;
+            background-image: linear-gradient(to right, #ff5900, #eba41f);
+            background-size: 0 2px;
+            background-repeat: no-repeat;
+            background-position: right bottom;
+            transition: background-size .4s;
+        }
+
+        .pricing-section footer a:hover {
+            background-size: 100% 2px;
+            background-position: left bottom;
+        }
+
+        .pricing-section footer a::after {
+            content: "https://www.uplabs.com/posts/pricing-cards-mockup";
+            background-image: inherit;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* MEDIA QUERIES */
+
+        @media (max-width: 1024px) {
+            .pricing-section h1 {
+                font-size: 2.5rem;
+            }
+
+            .pricing-section .card {
+                flex: 1 1 45%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .pricing-section h1 {
+                font-size: 2rem;
+            }
+
+            .pricing-section .card {
+                flex: 1 1 100%;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .pricing-section h1 {
+                font-size: 1.6rem;
+            }
+
+            .pricing-section .offer-title {
+                font-size: 1.5rem;
+            }
+
+            .pricing-section .offer-price {
+                font-size: 2.8rem;
+            }
+        }
+
+        .table thead th {
+  background-color: #1a1a1a;
+  color: #fff;
+  cursor: pointer;
+}
+
+.table tbody td,
+.table thead th {
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.animate-column {
+  animation: scaleUp 0.3s ease-in-out;
+}
+
+@keyframes scaleUp {
+  0% {
+    transform: scale(1);
+    background-color: #0fae96;
+    color: black;
+  }
+  50% {
+    transform: scale(1.1);
+    background-color: #0fae96;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+td:contains(\"✖\") {
+  color: #dc3545;
+}
+
+td:contains(\"✔\") {
+  color: #28a745;
+}
+        
+    </style>
+</head>
+
+<body>
+    <div class="container text-center py-4">
+        <h2>🔥 Special Service Offers</h2>
+        <h4>Get premium services at discounted prices!</h4>
+    </div>
+
+    <!-- Image Slider -->
+    <div class="slider">
+        <img src="./Screenshot-2024-05-27-at-5.43.28 PM-2048x983.png" class="slide active" />
+        <img src="./Screenshot-2024-05-27-at-6.59.21 PM-2048x983.png" class="slide" />
+        <img src="./WhatsApp-Image-2024-05-07-at-3.38.04-PM-1.jpeg" class="slide" />
+        <div class="controls">
+            <button onclick="prevSlide()">❮</button>
+            <button onclick="nextSlide()">❯</button>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn">Web Development Service</button>
+        <button class="btn">Social Media Marketing Service</button>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="container cards6">
+        <div class="cardSlider__section">
+            <div class="swiper cardSlider">
+                <div class="swiper-wrapper">
+                    <!-- Cards -->
+                    <div class="swiper-slide cardItem">
+                        <div class="card__wrapper">
+                            <h2 class="card__title">Web Design and Development</h2>
+                            <div class="card__desc">We create captivating websites that embody your brand's essence.
+                            </div>
+                            <a href="#" class="card__btn">Read More</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cardItem">
+                        <div class="card__wrapper">
+                            <h2 class="card__title">Mobile App Development</h2>
+                            <div class="card__desc">We specialize in designing and developing mobile applications for
+                                all platforms.</div>
+                            <a href="#" class="card__btn">Read More</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cardItem">
+                        <div class="card__wrapper">
+                            <h2 class="card__title">E-commerce Solutions</h2>
+                            <div class="card__desc">We help set up and optimize platforms like WooCommerce and Shopify.
+                            </div>
+                            <a href="#" class="card__btn">Read More</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cardItem">
+                        <div class="card__wrapper">
+                            <h2 class="card__title">Custom Software</h2>
+                            <div class="card__desc">We build tailored software solutions for your business needs.</div>
+                            <a href="#" class="card__btn">Read More</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cardItem">
+                        <div class="card__wrapper">
+                            <h2 class="card__title">SEO & Marketing</h2>
+                            <div class="card__desc">Boost your presence with our SEO and digital marketing services.
+                            </div>
+                            <a href="#" class="card__btn">Read More</a>
+                        </div>
+                    </div>
+                    <div class="swiper-slide cardItem">
+                        <div class="card__wrapper">
+                            <h2 class="card__title">Web Hosting</h2>
+                            <div class="card__desc">We offer reliable web hosting and maintenance services.</div>
+                            <a href="#" class="card__btn">Read More</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="swiper-pagination"></div>
+        </div>
+    </div>
+    <section class="pricing-section">
+        <h1 class="text-white">Choose your plan</h1>
+        <div class="card-container">
+            <div class="card">
+                <div class="offer-title">Basic</div>
+                <p class="offer-description">For beginners.</p>
+                <p class="offer-price">5</p>
+                <button class="buy">Buy now</button>
+                <hr>
+                <ul>
+                    <li>10 images / month</li>
+                    <li>PNG and JPG formats</li>
+                </ul>
+            </div>
+            <div class="card recommended-offer">
+                <div class="offer-title">Standard</div>
+                <p class="offer-description">For professionals.</p>
+                <p class="offer-price">16</p>
+                <button class="buy">Buy now</button>
+                <hr>
+                <ul>
+                    <li>30 images / month</li>
+                    <li>PNG / JPG / SVG formats</li>
+                    <li>Use without attribution</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div class="offer-title">Premium</div>
+                <p class="offer-description">For companies.</p>
+                <p class="offer-price">40</p>
+                <button class="buy">Buy now</button>
+                <hr>
+                <ul>
+                    <li>Unlimited images</li>
+                    <li>All formats</li>
+                    <li>Use without attribution</li>
+                    <li>Edit color, background...</li>
+                </ul>
+            </div>
+        </div>
+        <footer>
+            <p>
+                Inspiration:
+                <a href="https://www.uplabs.com/posts/pricing-cards-mockup" target="_blank"></a><br>
+                Made by <span class="italic">Louis Legrain</span>.
+            </p>
+        </footer>
+    </section>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="flip">
+                    <div class="flip-inner">
+                        <div class="flip-front"
+                            style="background-image: url('https://images.pexels.com/photos/540518/pexels-photo-540518.jpeg')">
+                            <h1 class="text-shadow">MOUNTAIN</h1>
+                        </div>
+                        <div class="flip-back">
+                            <div>
+                                <h2>Angular</h2>
+                                <p>Good tools make application development quicker and easier to maintain than if you
+                                    did everything by hand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="flip">
+                    <div class="flip-inner">
+                        <div class="flip-front"
+                            style="background-image: url('https://images.pexels.com/photos/414171/pexels-photo-414171.jpeg')">
+                            <h1 class="text-shadow">LAKE</h1>
+                        </div>
+                        <div class="flip-back">
+                            <div>
+                                <h2>Angular</h2>
+                                <p>Good tools make application development quicker and easier to maintain than if you
+                                    did everything by hand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="flip">
+                    <div class="flip-inner">
+                        <div class="flip-front"
+                            style="background-image: url('https://images.pexels.com/photos/36717/amazing-animal-beautiful-beautifull.jpg')">
+                            <h1 class="text-shadow">OCEAN</h1>
+                        </div>
+                        <div class="flip-back">
+                            <div>
+                                <h2>Angular</h2>
+                                <p>Good tools make application development quicker and easier to maintain than if you
+                                    did everything by hand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h4 class="mt-5">Vertical Flip</h4>
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="flip flip-vertical">
+                    <div class="flip-inner">
+                        <div class="flip-front"
+                            style="background-image: url('https://images.pexels.com/photos/38136/pexels-photo-38136.jpeg')">
+                            <h1 class="text-shadow">FOREST</h1>
+                        </div>
+                        <div class="flip-back">
+                            <div>
+                                <h2>Angular</h2>
+                                <p>Good tools make application development quicker and easier to maintain than if you
+                                    did everything by hand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="flip flip-vertical">
+                    <div class="flip-inner">
+                        <div class="flip-front"
+                            style="background-image: url('https://images.pexels.com/photos/34950/pexels-photo.jpg')">
+                            <h1 class="text-shadow">TRACK</h1>
+                        </div>
+                        <div class="flip-back">
+                            <div>
+                                <h2>Angular</h2>
+                                <p>Good tools make application development quicker and easier to maintain than if you
+                                    did everything by hand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="flip flip-vertical">
+                    <div class="flip-inner">
+                        <div class="flip-front"
+                            style="background-image: url('https://images.pexels.com/photos/34546/sunset-lake-landscape-summer.jpg')">
+                            <h1 class="text-shadow">SWAMP</h1>
+                        </div>
+                        <div class="flip-back">
+                            <div>
+                                <h2>Angular</h2>
+                                <p>Good tools make application development quicker and easier to maintain than if you
+                                    did everything by hand.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container py-5">
+  <div class="table-responsive">
+    <table class="table table-bordered text-center table-hover pricing-table mb-0">
+      <thead class="table-dark">
+        <tr>
+          <th>Features</th>
+          <th class="clickable">Starter Kit ₹2,499</th>
+          <th class="clickable">Premium ₹9,999</th>
+          <th class="clickable">E-commerce ₹14,999</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Website Design</td>
+          <td>One-page template</td>
+          <td>5–10 page template</td>
+          <td>Unlimited Products</td>
+        </tr>
+        <tr>
+          <td>SEO</td>
+          <td>Basic SEO</td>
+          <td>Basic SEO</td>
+          <td>Advanced SEO</td>
+        </tr>
+        <tr>
+          <td>Social Media</td>
+          <td>Profiles on 2 platforms</td>
+          <td>Profiles on 2 platforms</td>
+          <td>Profiles on 2 platforms</td>
+        </tr>
+        <tr>
+          <td>Logo Design</td>
+          <td>✖</td>
+          <td>✔</td>
+          <td>✔</td>
+        </tr>
+        <tr>
+          <td>Google Analytics</td>
+          <td>Setup included</td>
+          <td>Setup included</td>
+          <td>Setup included</td>
+        </tr>
+        <tr>
+          <td>Content Creation</td>
+          <td>Yes</td>
+          <td>Yes + 2 blog posts</td>
+          <td>Yes + 5 blog posts</td>
+        </tr>
+        <tr>
+          <td>Consulting & Reporting</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>Yes</td>
+        </tr>
+        <tr>
+          <td>Google My Business</td>
+          <td>Yes</td>
+          <td>Yes</td>
+          <td>Yes</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="mt-3 text-muted text-center small">Note: All taxes are included. Annual renewal charges apply.</p>
+</div>
+
+<script>
+  // Optional: animate column click
+  document.querySelectorAll('.clickable').forEach((cell, index) => {
+    cell.addEventListener('click', () => {
+      document.querySelectorAll(`tbody td:nth-child(${index + 1})`).forEach(td => {
+        td.classList.add('animate-column');
+        setTimeout(() => td.classList.remove('animate-column'), 300);
+      });
+    });
+  });
+</script>
+
+
+    <!-- Scripts -->
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll(".slide");
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.remove("active");
+                if (i === index) slide.classList.add("active");
+            });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        setInterval(nextSlide, 4000);
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        let init = false;
+        let pricingCardSwiper;
+
+        function swiperCard() {
+            if (window.innerWidth <= 991) {
+                if (!init) {
+                    init = true;
+                    pricingCardSwiper = new Swiper(".cardSlider", {
+                        slidesPerView: 1,
+                        spaceBetween: 20,
+                        grabCursor: true,
+                        keyboard: true,
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        breakpoints: {
+                            768: {
+                                slidesPerView: 2,
+                            }
+                        },
+                    });
+                }
+            } else if (init) {
+                pricingCardSwiper.destroy();
+                init = false;
+            }
+        }
+
+        swiperCard();
+        window.addEventListener("resize", swiperCard);
+
+        document.querySelectorAll('.card__btn').forEach(btn => {
+            btn.addEventListener('click', function (e) {
+                e.preventDefault();
+                btn.classList.add('clicked');
+                setTimeout(() => btn.classList.remove('clicked'), 1000);
+            });
+        });
+    </script>
+</body>
+
+</html>
